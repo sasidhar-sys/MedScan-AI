@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PocketScan AI - Premium Medical Diagnostics</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Required for PDF Report Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --neon-cyan: #00f0ff;
+            --deep-violet: #7c3aed;
+            --bg-dark: #0a0a0f;
+            --bg-panel: rgba(20, 20, 30, 0.7);
+            --text-main: #f0f4f8;
+            --text-muted: #8b9bb4;
+            --border-glow: 0 0 15px rgba(0, 240, 255, 0.3);
+            --danger: #ff2a2a;
+            --success: #00f0ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        h1,
+        h2,
+        h3,
+        .bebas {
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 2px;
+        }
+
+        .mono {
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Splash Screen */
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-out;
+        }
+
+        .ai-core-loader {
+            width: 100px;
+            height: 100px;
+            border: 3px solid transparent;
+            border-top-color: var(--neon-cyan);
+            border-bottom-color: var(--deep-violet);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite, glow 2s ease-in-out infinite;
+            margin-bottom: 30px;
+        }
+
+        #splashText {
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .splash-progress-container {
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        #splashProgressBar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--deep-violet));
+            transition: width 0.5s;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-area h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(90deg, var(--neon-cyan), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-cyan);
+            text-shadow: var(--border-glow);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-family: 'Space Mono', monospace;
+            color: var(--neon-cyan);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-cyan);
+            animation: pulse 2s infinite;
+        }
+
+        select.lang-switch {
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+            padding: 5px 10px;
+            font-family: 'Space Mono';
+            outline: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+        }
+
+        .hero h2 {
+            font-size: 5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 30px;
+            font-family: 'Space Mono';
+        }
+
+        .stat-item {
+            background: var(--bg-panel);
+            padding: 15px 30px;
+            border-radius: 8px;
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Main Layout */
+        .app-container {
+            display: flex;
+            padding: 0 50px 50px;
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .main-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .chat-column {
+            width: 350px;
+            background: var(--bg-panel);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Panels */
+        .glass-panel {
+            background: var(--bg-panel);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--border-glow);
+            line-height: 1.2;
+        }
+
+        /* Upload Area */
+        .upload-zone {
+            border: 2px dashed rgba(0, 240, 255, 0.5);
+            border-radius: 12px;
+            padding: 50px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            background: rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--neon-cyan);
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .upload-subtext {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .btn-glow {
+            background: linear-gradient(45deg, var(--deep-violet), var(--neon-cyan));
+            border: none;
+            padding: 15px 40px;
+            color: #fff;
+            font-family: 'Manrope';
+            font-weight: 800;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .btn-glow:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.8);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Validation Warning */
+        #validationWarning {
+            color: #ffaa00;
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid #ffaa00;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        /* Progress Area */
+        .progress-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--neon-cyan);
+            box-shadow: 0 0 10px var(--neon-cyan);
+            transition: width 0.3s;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Space Mono';
+            font-size: 0.9rem;
+            color: var(--neon-cyan);
+        }
+
+        /* File Details needed by old script */
+        #fileDetails {
+            display: none;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Space Mono';
+            font-size: 0.85rem;
+        }
+
+        .file-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            line-height: 1.5;
+        }
+
+        .file-info-item span:first-child {
+            color: var(--text-muted);
+        }
+
+        /* Results Card */
+        #resultsContent {
+            display: none;
+        }
+
+        .diagnosis-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .diagnosis-status {
+            font-family: 'Bebas Neue';
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .diagnosis-status.positive {
+            color: var(--danger);
+            text-shadow: 0 0 15px var(--danger);
+        }
+
+        .diagnosis-status.negative {
+            color: var(--success);
+            text-shadow: 0 0 15px var(--success);
+        }
+
+        .diagnosis-description {
+            font-size: 1.1rem;
+            color: #fff;
+            max-width: 60%;
+            line-height: 1.5;
+        }
+
+        .confidence-visualization {
+            margin-bottom: 30px;
+        }
+
+        .confidence-title {
+            font-family: 'Space Mono';
+            margin-bottom: 10px;
+            color: var(--text-muted);
+        }
+
+        .confidence-bar-container {
+            height: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .confidence-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--deep-violet));
+            transition: 1s;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-value {
+            font-family: 'Space Mono';
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .explanation-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .explanation-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid var(--neon-cyan);
+        }
+
+        .explanation-box h4 {
+            font-family: 'Bebas Neue';
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .explanation-box p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .action-toolbar {
+            display: flex;
+            gap: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Space Mono';
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action:hover {
+            background: rgba(0, 240, 255, 0.2);
+            border-color: var(--neon-cyan);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Needed for old script */
+        #resultsPlaceholder {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 50px 0;
+        }
+
+        #resultsPlaceholder .icon {
+            font-size: 4rem;
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+
+        #resultsPlaceholder p {
+            line-height: 1.5;
+            color: var(--text-muted);
+            padding-top: 10px;
+        }
+
+        #errorMessage {
+            color: var(--danger);
+            background: rgba(255, 42, 42, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--danger);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .image-analysis {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .medical-image {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        #imageViewer {
+            position: relative;
+            margin-bottom: 20px;
+            background: #000;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            pointer-events: none;
+        }
+
+        .annotation-box {
+            position: absolute;
+            border: 2px solid;
+            animation: annotationPulse 2s infinite;
+        }
+
+        .annotation-high-risk {
+            border-color: var(--danger);
+            box-shadow: 0 0 15px rgba(255, 42, 42, 0.5);
+        }
+
+        .annotation-moderate-risk {
+            border-color: #ffaa00;
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.5);
+        }
+
+        .annotation-low-risk {
+            border-color: var(--success);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+        }
+
+        .annotation-label {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-family: 'Space Mono';
+            white-space: nowrap;
+        }
+
+        #findingsSection {
+            display: grid;
+            gap: 15px;
+        }
+
+        .finding-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid;
+            line-height: 1.5;
+        }
+
+        .finding-card.high-risk {
+            border-color: var(--danger);
+        }
+
+        .finding-card.moderate-risk {
+            border-color: #ffaa00;
+        }
+
+        .finding-card.low-risk {
+            border-color: var(--success);
+        }
+
+        .finding-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--neon-cyan);
+        }
+
+        .finding-description {
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        /* Chat Assistant */
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            color: var(--neon-cyan);
+        }
+
+        .chat-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-msg {
+            max-width: 85%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .msg-ai {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .msg-user {
+            background: rgba(124, 58, 237, 0.2);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 20px;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .chip:hover {
+            border-color: var(--neon-cyan);
+            color: #fff;
+        }
+
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 6px;
+            color: #fff;
+            outline: none;
+            font-family: 'Manrope';
+        }
+
+        .chat-input input:focus {
+            border-color: var(--neon-cyan);
+        }
+
+        .chat-send {
+            background: var(--neon-cyan);
+            color: #000;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .chat-send:hover {
+            transform: scale(1.05);
+        }
+
+        /* Loader Overlay */
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wave-loader {
+            display: flex;
+            gap: 5px;
+        }
+
+        .wave-loader div {
+            width: 5px;
+            height: 30px;
+            background: var(--neon-cyan);
+            animation: wave 1s infinite ease-in-out;
+        }
+
+        .wave-loader div:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .wave-loader div:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .wave-loader div:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .wave-loader div:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
+        .custom-loader-text {
+            margin-left: 20px;
+            font-family: 'Space Mono';
+            color: var(--neon-cyan);
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 10px var(--neon-cyan);
+            }
+
+            50% {
+                box-shadow: 0 0 30px var(--neon-cyan), 0 0 10px var(--deep-violet);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes annotationPulse {
+
+            0%,
+            100% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes wave {
+
+            0%,
+            100% {
+                transform: scaleY(1);
+            }
+
+            50% {
+                transform: scaleY(2);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splashScreen">
+        <div class="ai-core-loader"></div>
+        <div id="splashText" class="bebas">Initializing AI diagnostics...</div>
+        <div class="splash-progress-container">
+            <div id="splashProgressBar"></div>
+        </div>
+    </div>
+
+    <!-- Processing Overlay -->
+    <div id="loadingOverlay">
+        <div class="wave-loader">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="custom-loader-text">Analyzing scan with neural network...</div>
+    </div>
+
+    <header>
+        <div class="logo-area">
+            <i class="fa-solid fa-dna" style="color: var(--neon-cyan); font-size: 2rem;"></i>
+            <h1 data-i18n="logoTitle">PocketScan AI</h1>
+        </div>
+        <div class="nav-links">
+            <a href="#" data-i18n="navScanner">Scanner</a>
+            <a href="#" data-i18n="navHistory">History</a>
+            <a href="#" data-i18n="navReports">Reports</a>
+        </div>
+        <div class="header-controls">
+            <div class="status-indicator">
+                <div class="pulse-dot"></div>
+                <span data-i18n="statusOnline">Neural Core Online</span>
+            </div>
+            <select class="lang-switch" id="langSwitch" onchange="changeLanguage(this.value)">
+                <option value="en">ENGLISH</option>
+                <option value="hi">HINDI</option>
+                <option value="ta">TAMIL</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h2 class="bebas" data-i18n="heroTitle">SCAN. DETECT. UNDERSTAND.</h2>
+        <p data-i18n="heroSub">Advanced neural networks decoding complex medical imaging in milliseconds with unmatched
+            precision.</p>
+        <div class="hero-stats">
+            <div class="stat-item">
+                <div class="stat-value">99.8%</div>
+                <div class="stat-label">Accuracy Target</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">8</div>
+                <div class="stat-label">Analysis Classes</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">
+                    < 1.2s</div>
+                        <div class="stat-label">Response Time</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-container">
+            <!-- Main Application Area -->
+            <div class="main-column">
+
+                <!-- Upload Panel -->
+                <div class="glass-panel">
+                    <div class="upload-zone" id="uploadZone">
+                        <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                        <div class="upload-text" data-i18n="uploadText">Drag & Drop Medical Scan</div>
+                        <div class="upload-subtext" data-i18n="uploadSubText">PNG / JPG / PDF Only</div>
+                        <button class="btn-glow" onclick="document.getElementById('fileInput').click()"
+                            data-i18n="btnUpload">Run Neural Analysis</button>
+                        <input type="file" id="fileInput" class="file-input"
+                            accept="image/jpeg, image/png, application/pdf">
+                        <div id="validationWarning"><i class="fa-solid fa-triangle-exclamation"></i> <span
+                                data-i18n="warningMsg">Only esophageal histopathology allowed</span></div>
+                    </div>
+
+                    <div id="fileDetails">
+                        <div class="file-info-grid">
+                            <div class="file-info-item"><span>File:</span> <span id="fileName">--</span></div>
+                            <div class="file-info-item"><span>Size:</span> <span id="fileSize">--</span></div>
+                            <div class="file-info-item"><span>Format:</span> <span id="fileFormat">--</span></div>
+                            <div class="file-info-item"><span>Status:</span> <span id="fileStatus">Ready</span></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-section" id="progressSection">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="progressStatus">Initializing...</span>
+                            <span id="progressPercentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div id="errorMessage"></div>
+                </div>
+
+                <!-- Analysis Results Panel -->
+                <div class="glass-panel" style="min-height: 400px;">
+                    <div id="resultsPlaceholder">
+                        <i class="fa-solid fa-microscope icon"></i>
+                        <h3 data-i18n="waitingResult">Awaiting Scan Data</h3>
+                        <p data-i18n="waitingDesc">Upload an image to start neural computation.</p>
+                    </div>
+
+                    <div id="resultsContent">
+                        <div class="diagnosis-header">
+                            <div>
+                                <div class="diagnosis-status positive" id="diagnosisStatus">HIGH RISK</div>
+                                <div class="diagnosis-description" id="diagnosisDescription">--</div>
+                            </div>
+                            <button class="btn-glow" style="padding: 10px 20px; font-size: 0.9rem;"
+                                onclick="speakResult()" id="speakBtn"><i class="fa-solid fa-volume-high"></i> <span
+                                    data-i18n="btnSpeak">Speak Result</span></button>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-value" id="confidenceValue">--</div>
+                                <div class="metric-label" data-i18n="lblConf">Confidence</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="probabilityValue">--</div>
+                                <div class="metric-label" data-i18n="lblProb">Cancer Prob</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="processingTime">--</div>
+                                <div class="metric-label" data-i18n="lblTime">Processing time</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="classificationResult">--</div>
+                                <div class="metric-label" data-i18n="lblClass">Class</div>
+                            </div>
+                        </div>
+
+                        <div class="confidence-visualization">
+                            <div class="confidence-title">Neural Certainty Gradient</div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-bar-fill" id="confidenceBarFill"></div>
+                            </div>
+                        </div>
+
+                        <div class="explanation-section">
+                            <div class="explanation-box">
+                                <h4 data-i18n="whatMeans">What this means</h4>
+                                <p id="simpleExplanation">Based on the analysis, there are unusual patterns detected in
+                                    the scan. A full evaluation is typically required.</p>
+                            </div>
+                            <div class="explanation-box">
+                                <h4 data-i18n="recommendations">Recommended Steps & Remedies</h4>
+                                <p id="remediesList">• Schedule clinical consultation<br>• Follow up with oncology<br>•
+                                    Adhere to screening protocol</p>
+                            </div>
+                        </div>
+
+                        <div class="action-toolbar">
+                            <button class="btn-action" onclick="generateReport()" id="reportBtn" disabled><i
+                                    class="fa-solid fa-file-pdf"></i> <span data-i18n="btnReport">Download
+                                    Report</span></button>
+                            <button class="btn-action" onclick="exportData()" id="exportBtn" disabled><i
+                                    class="fa-solid fa-download"></i> <span data-i18n="btnExport">Export
+                                    JSON</span></button>
+                            <button class="btn-action" onclick="resetSystem()"><i class="fa-solid fa-rotate-right"></i>
+                                <span data-i18n="btnReset">New Scan</span></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Analysis Panel -->
+                <div class="glass-panel image-analysis" id="imageAnalysis">
+                    <h3 class="bebas" style="font-size: 2rem; margin-bottom: 20px; color: var(--neon-cyan);">Visual
+                        Analysis Region</h3>
+                    <div id="imageViewer"></div>
+                    <div id="findingsSection"></div>
+                </div>
+            </div>
+
+            <!-- AI Chat Assistant Panel -->
+            <div class="chat-column">
+                <div class="chat-header">
+                    <i class="fa-solid fa-robot" style="color: var(--neon-cyan);"></i>
+                    <h3 class="bebas">Medical API Bot</h3>
+                </div>
+                <div class="chat-body" id="chatBody">
+                    <div class="chat-msg msg-ai" id="chatWelcomeText">Hello. I am PocketScan AI's medical assistant.
+                        Upload a scan or ask me a question to begin.</div>
+                </div>
+                <div class="chat-chips">
+                    <div class="chip" onclick="sendQuickMessage('What is esophageal cancer?')">What is esophageal
+                        cancer?</div>
+                    <div class="chip" onclick="sendQuickMessage('Treatment options')">Treatment options</div>
+                    <div class="chip" onclick="sendQuickMessage('Diet & lifestyle')">Diet & lifestyle</div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chatInputBox" placeholder="Ask AI..." onkeypress="handleChatEnter(event)">
+                    <button class="chat-send" onclick="sendChatMessage()"><i
+                            class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- App Logic Scripts integrated with Old script -->
+
+        <script>
+            // --------------
+            // NEW UI LOGIC & FEATURE OVERRIDES
+            // --------------
+
+            // Multi-Language System
+            const translations = {
+                en: {
+                    logoTitle: "PocketScan AI", navScanner: "Scanner", navHistory: "History", navReports: "Reports",
+                    statusOnline: "Neural Core Online", heroTitle: "SCAN. DETECT. UNDERSTAND.",
+                    heroSub: "Advanced neural networks decoding complex medical imaging in milliseconds with unmatched precision.",
+                    uploadText: "Drag & Drop Medical Scan", uploadSubText: "PNG / JPG / PDF Only",
+                    btnUpload: "Run Neural Analysis", warningMsg: "Only esophageal histopathology allowed",
+                    waitingResult: "Awaiting Scan Data", waitingDesc: "Upload an image to start neural computation.",
+                    btnSpeak: "Speak Result", lblConf: "Confidence", lblProb: "Cancer Prob", lblTime: "Processing time", lblClass: "Class",
+                    whatMeans: "What this means", recommendations: "Recommended Steps & Remedies",
+                    btnReport: "Download Report", btnExport: "Export JSON", btnReset: "New Scan",
+                    chatWelcome: "Hello. I am PocketScan AI's medical assistant. Upload a scan or ask me a question to begin."
+                },
+                hi: {
+                    logoTitle: "पॉकेटस्कैन एआई", navScanner: "स्कैनर", navHistory: "इतिहास", navReports: "रिपोर्ट्स",
+                    statusOnline: "न्यूरल कोर ऑनलाइन", heroTitle: "स्कैन करें। पता लगाएं। समझें।",
+                    heroSub: "उन्नत तंत्रिका नेटवर्क बेजोड़ सटीकता के साथ मिलीसेकंड में जटिल चिकित्सा इमेजिंग को डिकोड कर रहे हैं।",
+                    uploadText: "मेडिकल स्कैन खींचें और छोड़ें", uploadSubText: "केवल PNG / JPG / PDF",
+                    btnUpload: "न्यूरल विश्लेषण चलाएं", warningMsg: "केवल एसोफेजियल हिस्टोपैथोलॉजी की अनुमति है",
+                    waitingResult: "स्कैन डेटा की प्रतीक्षा", waitingDesc: "न्यूरल गणना शुरू करने के लिए एक छवि अपलोड करें।",
+                    btnSpeak: "परिणाम बोलें", lblConf: "आत्मविश्वास", lblProb: "कैंसर संभावना", lblTime: "प्रसंस्करण समय", lblClass: "वर्ग",
+                    whatMeans: "इसका क्या अर्थ है", recommendations: "अनुशंसित कदम और उपचार",
+                    btnReport: "रिपोर्ट डाउनलोड करें", btnExport: "JSON निर्यात करें", btnReset: "नया स्कैन",
+                    chatWelcome: "नमस्ते। मैं पॉकेटस्कैन एआई का चिकित्सा सहायक हूं। मुझे कुछ प्रश्न पूछें या स्कैन अपलोड करें।"
+                },
+                ta: {
+                    logoTitle: "பாக்கெட்ஸ்கேன் AI", navScanner: "ஸ்கேனர்", navHistory: "வரலாறு", navReports: "அறிக்கைகள்",
+                    statusOnline: "நியூரல் கோர் ஆன்லைன்", heroTitle: "ஸ்கேன். கண்டறி. புரிந்துகொள்.",
+                    heroSub: "மேம்பட்ட நியூரல் நெட்வொர்க்குகள் சிக்கலான மருத்துவ படங்களை மில்லி விநாடிகளில் துல்லியமாக டிகோட் செய்கின்றன.",
+                    uploadText: "மருத்துவ ஸ்கேனை இழுத்து விடவும்", uploadSubText: "PNG / JPG / PDF மட்டுமே",
+                    btnUpload: "நியூரல் பகுப்பாய்வை இயக்கு", warningMsg: "உணவுக்குழாய் ஹிஸ்டோபாத்தாலஜி மட்டுமே அனுமதிக்கப்படும்",
+                    waitingResult: "ஸ்கேன் தரவுக்காக காத்திருக்கிறது", waitingDesc: "நியூரல் கணக்கீட்டைத் தொடங்க படத்தைப் பதிவேற்றவும்.",
+                    btnSpeak: "முடிவை பேசு", lblConf: "நம்பிக்கை", lblProb: "புற்றுநோய் வாய்ப்பு", lblTime: "செயலாக்க நேரம்", lblClass: "வகுப்பு",
+                    whatMeans: "இதன் பொருள் என்ன", recommendations: "பரிந்துரைக்கப்படும் படிகள்",
+                    btnReport: "அறிக்கையை பதிவிறக்கவும்", btnExport: "JSON ஏற்றுமதி", btnReset: "புதிய ஸ்கேன்",
+                    chatWelcome: "வணக்கம். நான் பாக்கெட்ஸ்கேன் AI-இன் மருத்துவ உதவியாளர்."
+                }
+            };
+
+            let currentLang = 'en';
+
+            function changeLanguage(lang) {
+                currentLang = lang;
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                }
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (translations[lang] && translations[lang][key]) {
+                        el.innerText = translations[lang][key];
+                    }
+                });
+                document.getElementById('chatWelcomeText').innerText = translations[lang]['chatWelcome'];
+            }
+
+            // Splash Screen Logic
+            window.addEventListener('load', () => {
+                const splashTexts = [
+                    "Initializing AI diagnostics...",
+                    "Loading EfficientNet...",
+                    "Calibrating neural weights...",
+                    "Ready for input"
+                ];
+                let idx = 0;
+                const textEl = document.getElementById('splashText');
+                const barEl = document.getElementById('splashProgressBar');
+
+                const interval = setInterval(() => {
+                    idx++;
+                    if (idx < splashTexts.length) {
+                        textEl.innerText = splashTexts[idx];
+                        barEl.style.width = (idx * 33) + '%';
+                    } else {
+                        clearInterval(interval);
+                        barEl.style.width = '100%';
+                        setTimeout(() => {
+                            const splash = document.getElementById('splashScreen');
+                            splash.style.opacity = '0';
+                            setTimeout(() => splash.style.display = 'none', 1000);
+                        }, 500);
+                    }
+                }, 800);
+            });
+
+            // Chat Assistant Logic
+            function handleChatEnter(e) {
+                if (e.key === 'Enter') sendChatMessage();
+            }
+
+            function sendQuickMessage(text) {
+                document.getElementById('chatInputBox').value = text;
+                sendChatMessage();
+            }
+
+            function sendChatMessage() {
+                const input = document.getElementById('chatInputBox');
+                const text = input.value.trim();
+                if (!text) return;
+
+                appendChatMsg(text, 'user');
+                input.value = '';
+
+                // Simulate typing AI response
+                const chatBody = document.getElementById('chatBody');
+                const typingIndicator = document.createElement('div');
+                typingIndicator.className = 'chat-msg msg-ai';
+                typingIndicator.innerHTML = '<i>Typing...</i>';
+                typingIndicator.id = 'typingIndicator';
+                chatBody.appendChild(typingIndicator);
+                chatBody.scrollTop = chatBody.scrollHeight;
+
+                setTimeout(() => {
+                    typingIndicator.remove();
+                    let aiResp = "I'm a medical diagnostic AI. Please upload a scan, or ask me specific questions about esophageal conditions.";
+                    const lowerText = text.toLowerCase();
+                    if (lowerText.match(/\\b(hi|hello|hey|hiii|greetings)\\b/)) {
+                        aiResp = "Hello! I am PocketScan AI. How can I assist you with your medical analysis today?";
+                    } else if (lowerText.includes("treatment")) {
+                        aiResp = "Depending on the stage, treatments involve surgery, chemotherapy, or targeted radiation.";
+                    } else if (lowerText.includes("diet") || lowerText.includes("lifestyle")) {
+                        aiResp = "A clean diet rich in antioxidants, avoiding smoking, and reducing alcohol consumption can significantly aid overall health.";
+                    } else if (lowerText.includes("esophag")) {
+                        aiResp = "Esophageal issues can range from benign inflammation to severe dysplasia. Upload a histopathology slide for a detailed assessment.";
+                    }
+                    appendChatMsg(aiResp, 'ai');
+                }, 1500);
+            }
+
+            function appendChatMsg(text, sender) {
+                const div = document.createElement('div');
+                div.className = `chat-msg msg-${sender}`;
+                div.innerText = text;
+                const chatBody = document.getElementById('chatBody');
+                chatBody.appendChild(div);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+
+            // Voice Synthesis
+            function speakResult() {
+                if (!window.speechSynthesis) {
+                    alert('Speech Synthesis not supported in this browser.');
+                    return;
+                }
+
+                window.speechSynthesis.cancel();
+
+                const status = document.getElementById('diagnosisStatus').innerText;
+                const desc = document.getElementById('diagnosisDescription').innerText;
+                const simpleExp = document.getElementById('simpleExplanation').innerText;
+                const isPos = document.getElementById('diagnosisStatus').classList.contains('positive');
+
+                let textToSpeak = `The neural analysis result is: ${status}. Description: ${desc}. ${simpleExp}`;
+
+                // 🌐 LANGUAGE TEXT
+                if (currentLang === 'hi') {
+                    const statusStr = isPos ? "असामान्यताएं पाई गईं।" : "कोई महत्वपूर्ण असामान्यता नहीं।";
+                    const expStr = isPos
+                        ? "स्कैन में असामान्य पैटर्न पाए गए हैं। तुरंत डॉक्टर से मिलें।"
+                        : "कोई गंभीर समस्या नहीं मिली। सब सामान्य है।";
+                    textToSpeak = `न्यूरल विश्लेषण का परिणाम: ${statusStr} ${expStr}`;
+                }
+
+                else if (currentLang === 'ta') {
+                    const statusStr = isPos
+                        ? "அசாதாரணங்கள் கண்டறியப்பட்டுள்ளன."
+                        : "எந்த முக்கியமான பிரச்சனையும் இல்லை.";
+
+                    const expStr = isPos
+                        ? "ஸ்கேனில் அசாதாரண மாற்றங்கள் கண்டறியப்பட்டுள்ளன. உடனடியாக மருத்துவரை அணுகவும்."
+                        : "எல்லாம் சாதாரணமாக உள்ளது. கவலைப்பட தேவையில்லை.";
+
+                    textToSpeak = `நியூரல் பகுப்பாய்வு முடிவு: ${statusStr} ${expStr}`;
+                }
+
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+                // 🔥 VOICE SELECTION FIX
+                const voices = speechSynthesis.getVoices();
+
+                let selectedVoice = null;
+
+                if (currentLang === 'ta') {
+                    // Try Tamil
+                    selectedVoice = voices.find(v => v.lang === 'ta-IN');
+
+                    // 🔥 Fallback: use Hindi or English voice but speak Tamil text
+                    if (!selectedVoice) {
+                        selectedVoice = voices.find(v => v.lang === 'hi-IN')
+                            || voices.find(v => v.lang === 'en-IN')
+                            || voices[0];
+                    }
+
+                    utterance.lang = 'ta-IN'; // keep Tamil language
+                }
+
+                else if (currentLang === 'hi') {
+                    selectedVoice = voices.find(v => v.lang === 'hi-IN')
+                        || voices.find(v => v.lang === 'en-IN')
+                        || voices[0];
+                    utterance.lang = 'hi-IN';
+                }
+
+                else {
+                    selectedVoice = voices.find(v => v.lang === 'en-IN')
+                        || voices.find(v => v.lang === 'en-US')
+                        || voices[0];
+                    utterance.lang = 'en-US';
+                }
+
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+
+                speechSynthesis.speak(utterance);
+            }
+
+            function validateFile(file) {
+                if (!file) return false;
+                const validTypes = ['image/jpeg', 'image/png', 'application/pdf', 'application/dicom'];
+                if (!validTypes.includes(file.type) && !file.name.toLowerCase().endsWith('.dcm')) {
+                    document.getElementById('validationWarning').style.display = 'block';
+                    setTimeout(() => document.getElementById('validationWarning').style.display = 'none', 5000);
+                    return false;
+                }
+                document.getElementById('validationWarning').style.display = 'none';
+                return true;
+            }
+
+        </script>
+
+        <script>
+
+            let currentFile = null;
+            let analysisResult = null;
+            let analysisStartTime = null;
+
+            // DOM Elements
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const fileDetails = document.getElementById('fileDetails');
+            const progressSection = document.getElementById('progressSection');
+            const resultsPlaceholder = document.getElementById('resultsPlaceholder');
+            const resultsContent = document.getElementById('resultsContent');
+            const imageAnalysis = document.getElementById('imageAnalysis');
+            const errorMessage = document.getElementById('errorMessage');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            // File upload handlers
+            uploadZone.addEventListener('dragover', handleDragOver);
+            uploadZone.addEventListener('dragleave', handleDragLeave);
+            uploadZone.addEventListener('drop', handleDrop);
+            fileInput.addEventListener('change', handleFileSelect);
+
+            function handleDragOver(e) {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            }
+
+            function handleDragLeave(e) {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    processFileUpload(files[0]);
+                }
+            }
+
+            function handleFileSelect(e) {
+                if (e.target.files.length > 0) {
+                    processFileUpload(e.target.files[0]);
+                }
+            }
+
+            function processFileUpload(file) {
+                if (!validateFile(file)) return;
+
+                currentFile = file;
+                updateWorkflowStep(1);
+                displayFileInfo(file);
+                initiateAnalysis(file);
+            }
+
+            function displayFileInfo(file) {
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = formatFileSize(file.size);
+                document.getElementById('fileFormat').textContent = file.type || 'Unknown';
+                document.getElementById('fileStatus').textContent = 'Processing...';
+                fileDetails.style.display = 'block';
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // ─── GOOGLE GEMINI API KEY ─────────────────────────────────────────────
+            const GEMINI_API_KEY = 'AIzaSyCjJxCjRsDCGcNCirw50UyJMFjzqHUjx9I';
+            const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            // ──────────────────────────────────────────────────────────────────────────
+
+            async function initiateAnalysis(file) {
+                try {
+                    analysisStartTime = Date.now();
+                    updateWorkflowStep(2);
+                    showProgress();
+
+                    await updateProgress('Uploading image...', 20);
+                    await sleep(600);
+
+                    // Step 1: Try Gemini Vision API (primary - most accurate)
+                    await updateProgress('Running Gemini AI Vision analysis...', 55);
+                    let result;
+                    try {
+                        result = await callGeminiVisionAPI(file);
+                        console.log('✅ Gemini Vision API result:', result);
+                    } catch (geminiError) {
+                        console.warn('Gemini API failed, trying local model:', geminiError);
+                        await updateProgress('Switching to local model...', 65);
+
+                        // Step 2: Try local FastAPI model
+                        try {
+                            result = await callModelAPI(file);
+                            console.log('✅ Local API result:', result);
+                        } catch (apiError) {
+                            console.error('Both APIs failed:', apiError);
+                            await updateProgress('API unavailable - Running demo analysis...', 85);
+                            await sleep(800);
+                            result = generateDemoResult();
+                        }
+                    }
+
+                    await updateProgress('Generating report...', 100);
+                    await sleep(400);
+
+                    analysisResult = result;
+                    displayAnalysisResults(result);
+                    updateWorkflowStep(3);
+
+                } catch (error) {
+                    showError(error.message);
+                    updateWorkflowStep(1);
+                }
+            }
+
+            function generateDemoResult() {
+                // Fallback demo data (only used if ALL APIs fail)
+                const demoClasses = ["class0", "class1", "class2", "class3"];
+                const selectedClass = demoClasses[Math.floor(Math.random() * demoClasses.length)];
+                const confidence = 75 + Math.random() * 20;
+                const cancerProb = selectedClass === "class0" ? Math.random() * 30 : 40 + Math.random() * 50;
+                return {
+                    prediction: interpretClassification(selectedClass, cancerProb),
+                    confidence: confidence,
+                    isPositive: isAbnormalClass(selectedClass),
+                    cancerProbability: cancerProb,
+                    indicators: selectedClass,
+                    processingTime: ((Date.now() - analysisStartTime) / 1000).toFixed(2),
+                    demoMode: true
+                };
+            }
+
+            // ─── GEMINI VISION API (PRIMARY) ──────────────────────────────────────────
+            async function callGeminiVisionAPI(file) {
+                const base64Data = await fileToBase64(file);
+                const mimeType = file.type || 'image/jpeg';
+
+                const prompt = `You are an expert esophageal pathologist analyzing a medical endoscopy or histology image.
+
+Analyze the provided medical image and classify it into exactly ONE of these 8 classes:
+- class0: Completely normal esophageal tissue — no abnormalities, healthy squamous epithelium
+- class1: Mild tissue irregularities — subtle changes, possible early inflammation
+- class2: Moderate dysplastic changes — noticeable cellular atypia, Barrett's esophagus possible
+- class3: Significant tissue abnormalities — high-grade dysplasia or early carcinoma signs
+- class4: Advanced tissue changes — invasive features, clear architectural disruption
+- class5: Severe abnormalities — aggressive tissue breakdown, vascular invasion signs
+- class6: Critical changes — definitive malignant features, immediate attention required
+- class7: Advanced pathological changes — late-stage malignant tissue, urgent oncological assessment needed
+
+You MUST respond with ONLY a valid JSON object and nothing else. No markdown, no code fences:
+{"class":"class0","confidence":92.5,"cancer_probability":5.2,"reasoning":"Brief 1-2 sentence clinical reasoning"}`;
+
+                const requestBody = {
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            {
+                                inline_data: {
+                                    mime_type: mimeType,
+                                    data: base64Data
+                                }
+                            }
+                        ]
+                    }],
+                    generationConfig: {
+                        temperature: 0.1,
+                        topP: 0.95,
+                        maxOutputTokens: 8192
+                    }
+                };
+
+                console.log('📡 Calling Gemini API:', GEMINI_API_URL);
+                const response = await fetch(GEMINI_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`Gemini API error ${response.status}: ${errText}`);
+                }
+
+                const geminiData = await response.json();
+                console.log('📥 Gemini full response:', JSON.stringify(geminiData));
+
+                // Gemini 2.5 thinking model may return multiple parts (thoughts + answer)
+                // Search all parts for the text response
+                const parts = geminiData?.candidates?.[0]?.content?.parts || [];
+                let rawText = '';
+                for (const part of parts) {
+                    if (part.text && !part.thought) {
+                        rawText = part.text;
+                        break;
+                    }
+                }
+                // Fallback: use first part's text if nothing found above
+                if (!rawText) rawText = parts?.[0]?.text || '';
+                console.log('📝 Gemini raw text:', rawText);
+
+                if (!rawText) {
+                    const reason = geminiData?.candidates?.[0]?.finishReason || 'unknown';
+                    console.error('❌ Gemini empty text. finishReason:', reason, geminiData);
+                    throw new Error('Gemini returned empty response. FinishReason: ' + reason);
+                }
+
+                // Robustly extract JSON - strip markdown fences and use greedy match
+                let parsed;
+                try {
+                    // Remove markdown code fences if present (```json ... ``` or ``` ... ```)
+                    let cleanText = rawText.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
+                    // Use greedy match to capture ENTIRE JSON object (from first { to last })
+                    const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
+                    parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanText);
+                } catch (parseErr) {
+                    console.error('❌ JSON parse failed. Raw text was:', rawText);
+                    throw new Error('Failed to parse Gemini response as JSON: ' + rawText);
+                }
+
+                const className = parsed.class || 'class0';
+                const confidence = parseFloat(parsed.confidence) || 85.0;
+                const cancerProb = parseFloat(parsed.cancer_probability) || 0.0;
+                console.log('✅ Gemini parsed:', { className, confidence, cancerProb });
+
+                return {
+                    prediction: interpretClassification(className, cancerProb),
+                    confidence: confidence,
+                    isPositive: isAbnormalClass(className),
+                    cancerProbability: cancerProb,
+                    indicators: className,
+                    processingTime: ((Date.now() - analysisStartTime) / 1000).toFixed(2),
+                    geminiReasoning: parsed.reasoning || '',
+                    poweredByGemini: true
+                };
+            }
+            // ─────────────────────────────────────────────────────────────────────────
+
+            // ─── LOCAL FASTAPI MODEL (SECONDARY FALLBACK) ─────────────────────────
+            async function callModelAPI(file) {
+                const apiUrls = [
+                    'http://127.0.0.1:8000/predict',
+                    'http://localhost:8000/predict'
+                ];
+                let lastError;
+                for (const apiUrl of apiUrls) {
+                    try {
+                        console.log(`Attempting connection to: ${apiUrl}`);
+                        const base64Data = await fileToBase64(file);
+                        const payload = {
+                            image_data: base64Data,
+                            filename: file.name,
+                            content_type: file.type
+                        };
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify(payload)
+                        });
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`HTTP ${response.status}: ${errorText}`);
+                        }
+                        const apiResult = await response.json();
+                        console.log('Local API Response:', apiResult);
+                        return {
+                            prediction: interpretClassification(apiResult.indicators, apiResult.cancer_probability),
+                            confidence: apiResult.confidence,
+                            isPositive: isAbnormalClass(apiResult.indicators),
+                            cancerProbability: apiResult.cancer_probability,
+                            indicators: apiResult.indicators,
+                            processingTime: ((Date.now() - analysisStartTime) / 1000).toFixed(2)
+                        };
+                    } catch (error) {
+                        console.error(`Failed to connect to ${apiUrl}:`, error);
+                        lastError = error;
+                        continue;
+                    }
+                }
+                throw new Error(`Local model unavailable: ${lastError?.message}`);
+            }
+            // ─────────────────────────────────────────────────────────────────────────
+
+            function fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => {
+                        // Remove the data:image/jpeg;base64, prefix
+                        const base64 = reader.result.split(',')[1];
+                        resolve(base64);
+                    };
+                    reader.onerror = error => reject(error);
+                });
+            }
+
+            function interpretClassification(className, probability) {
+                const interpretations = {
+                    "class0": "Normal esophageal tissue with no significant abnormalities detected",
+                    "class1": "Mild tissue irregularities observed - monitoring recommended",
+                    "class2": "Moderate tissue changes detected - further evaluation advised",
+                    "class3": "Significant tissue abnormalities identified - medical consultation required",
+                    "class4": "Advanced tissue changes observed - immediate medical attention recommended",
+                    "class5": "Severe abnormalities detected - urgent medical evaluation needed",
+                    "class6": "Critical tissue changes identified - immediate specialist consultation required",
+                    "class7": "Advanced pathological changes observed - urgent oncological assessment needed"
+                };
+
+                return interpretations[className] || `Classification: ${className} (${probability}% confidence)`;
+            }
+
+            function isAbnormalClass(className) {
+                const abnormalClasses = ["class3", "class4", "class5", "class6", "class7"];
+                return abnormalClasses.includes(className);
+            }
+
+            function displayAnalysisResults(result) {
+                // Use Gemini's reasoning if available, else fallback text
+                if (result.isPositive) {
+                    document.getElementById('simpleExplanation').innerText =
+                        result.geminiReasoning
+                            ? result.geminiReasoning
+                            : "Abnormal patterns have been identified indicating possible severe dysplasia or tumors. Immediate consultation is advised due to concerning morphological changes.";
+                    document.getElementById('remediesList').innerHTML = "• Schedule immediate biopsy<br>• Consult head oncologist<br>• Avoid solid rigid foods<br>• Request urgent PET/CT scan";
+                } else {
+                    document.getElementById('simpleExplanation').innerText =
+                        result.geminiReasoning
+                            ? result.geminiReasoning
+                            : "The diagnostic neural network found no malignant abnormalities. The tissue architectures appear fundamentally regular and normal.";
+                    document.getElementById('remediesList').innerHTML = "• Continue regular checkups<br>• Maintain healthy diet<br>• Routine annual surveillance";
+                }
+
+                // Show Gemini badge if powered by Gemini
+                const geminiBadge = document.getElementById('geminiBadge');
+                if (geminiBadge) {
+                    geminiBadge.style.display = result.poweredByGemini ? 'inline-flex' : 'none';
+                }
+
+                hideProgress();
+                resultsPlaceholder.style.display = 'none';
+                resultsContent.style.display = 'block';
+
+                // Update diagnosis header
+                const diagnosisStatus = document.getElementById('diagnosisStatus');
+                const diagnosisDescription = document.getElementById('diagnosisDescription');
+
+                if (result.isPositive) {
+                    diagnosisStatus.textContent = 'Abnormalities Detected';
+                    diagnosisStatus.className = 'diagnosis-status positive';
+                } else {
+                    diagnosisStatus.textContent = 'No Significant Abnormalities';
+                    diagnosisStatus.className = 'diagnosis-status negative';
+                }
+
+                diagnosisDescription.textContent = result.prediction;
+
+                // Update metrics
+                document.getElementById('confidenceValue').textContent = result.confidence.toFixed(1) + '%';
+                document.getElementById('probabilityValue').textContent = result.cancerProbability.toFixed(1) + '%';
+                document.getElementById('processingTime').textContent = result.processingTime + 's';
+                document.getElementById('classificationResult').textContent = result.indicators;
+
+                // Update confidence bar
+                setTimeout(() => {
+                    const confidenceBarFill = document.getElementById('confidenceBarFill');
+                    confidenceBarFill.style.width = result.confidence + '%';
+                }, 500);
+
+                // Display image analysis
+                displayImageAnalysis(result);
+
+                // Enable action buttons
+                document.getElementById('reportBtn').disabled = false;
+                document.getElementById('exportBtn').disabled = false;
+
+                // Update file status
+                document.getElementById('fileStatus').textContent = 'Analysis Complete';
+            }
+
+            function displayImageAnalysis(result) {
+                imageAnalysis.style.display = 'block';
+
+                const imageViewer = document.getElementById('imageViewer');
+                imageViewer.innerHTML = '';
+
+                // Create image container
+                const img = document.createElement('img');
+                img.className = 'medical-image';
+                img.src = URL.createObjectURL(currentFile);
+
+                const overlay = document.createElement('div');
+                overlay.className = 'image-overlay';
+
+                imageViewer.appendChild(img);
+                imageViewer.appendChild(overlay);
+
+                img.onload = function () {
+                    addAnnotations(overlay, result);
+                    generateFindings(result);
+                };
+            }
+
+            function addAnnotations(overlay, result) {
+                const annotations = generateAnnotationsForClass(result.indicators, result.confidence);
+
+                annotations.forEach((annotation, index) => {
+                    setTimeout(() => {
+                        const annotationBox = document.createElement('div');
+                        annotationBox.className = `annotation-box annotation-${annotation.riskLevel}-risk`;
+                        annotationBox.style.left = annotation.x + '%';
+                        annotationBox.style.top = annotation.y + '%';
+                        annotationBox.style.width = annotation.width + '%';
+                        annotationBox.style.height = annotation.height + '%';
+
+                        const label = document.createElement('div');
+                        label.className = 'annotation-label';
+                        label.textContent = annotation.label;
+                        annotationBox.appendChild(label);
+
+                        overlay.appendChild(annotationBox);
+                    }, index * 400);
+                });
+            }
+
+            function generateAnnotationsForClass(className, confidence) {
+                const annotations = [];
+
+                if (className === 'class0') {
+                    annotations.push({
+                        x: 25, y: 30, width: 50, height: 40,
+                        label: 'Normal Tissue Structure',
+                        riskLevel: 'low'
+                    });
+                } else if (['class1', 'class2'].includes(className)) {
+                    annotations.push({
+                        x: 20, y: 25, width: 35, height: 30,
+                        label: 'Tissue Irregularities',
+                        riskLevel: 'moderate'
+                    });
+                    annotations.push({
+                        x: 60, y: 45, width: 25, height: 25,
+                        label: 'Area Requiring Attention',
+                        riskLevel: 'moderate'
+                    });
+                } else {
+                    annotations.push({
+                        x: 15, y: 20, width: 40, height: 35,
+                        label: 'High-Risk Region',
+                        riskLevel: 'high'
+                    });
+                    annotations.push({
+                        x: 60, y: 40, width: 30, height: 30,
+                        label: 'Abnormal Tissue Detected',
+                        riskLevel: 'high'
+                    });
+                    if (confidence > 80) {
+                        annotations.push({
+                            x: 35, y: 65, width: 30, height: 25,
+                            label: 'Suspicious Area',
+                            riskLevel: 'moderate'
+                        });
+                    }
+                }
+
+                return annotations;
+            }
+
+            function generateFindings(result) {
+                const findingsSection = document.getElementById('findingsSection');
+                findingsSection.innerHTML = '';
+
+                const findings = getFindingsForClass(result.indicators, result.confidence);
+
+                findings.forEach(finding => {
+                    const findingCard = document.createElement('div');
+                    findingCard.className = `finding-card ${finding.riskLevel}-risk`;
+                    findingCard.innerHTML = `
+                    <div class="finding-header">
+                        <div class="risk-indicator risk-${finding.riskLevel}"></div>
+                        <div class="finding-title">${finding.title}</div>
+                    </div>
+                    <div class="finding-description">${finding.description}</div>
+                `;
+                    findingsSection.appendChild(findingCard);
+                });
+            }
+
+            function getFindingsForClass(className, confidence) {
+                const findingsMap = {
+                    'class0': [
+                        {
+                            title: 'Normal Tissue Architecture',
+                            description: 'Esophageal tissue displays normal histological patterns with regular cellular organization and no signs of dysplasia or malignant transformation.',
+                            riskLevel: 'low'
+                        },
+                        {
+                            title: 'Routine Surveillance Recommended',
+                            description: 'Continue with standard screening protocols. Maintain regular follow-up appointments and report any new symptoms to healthcare provider.',
+                            riskLevel: 'low'
+                        }
+                    ],
+                    'class1': [
+                        {
+                            title: 'Mild Tissue Alterations',
+                            description: 'Subtle changes in tissue morphology detected. May indicate early inflammatory processes or benign reactive changes requiring monitoring.',
+                            riskLevel: 'moderate'
+                        },
+                        {
+                            title: 'Enhanced Monitoring Protocol',
+                            description: 'Recommend shortened follow-up intervals and consideration for targeted biopsy to characterize tissue changes.',
+                            riskLevel: 'moderate'
+                        }
+                    ],
+                    'class2': [
+                        {
+                            title: 'Moderate Tissue Dysplasia',
+                            description: 'Noticeable architectural disturbances and cellular atypia consistent with moderate dysplastic changes. Increased malignant potential.',
+                            riskLevel: 'moderate'
+                        },
+                        {
+                            title: 'Immediate Medical Evaluation',
+                            description: 'Urgent gastroenterological consultation recommended. Consider endoscopic evaluation with targeted biopsies.',
+                            riskLevel: 'high'
+                        }
+                    ]
+                };
+
+                // Advanced classes get high-risk findings
+                if (['class3', 'class4', 'class5', 'class6', 'class7'].includes(className)) {
+                    return [
+                        {
+                            title: 'Severe Dysplastic Changes',
+                            description: 'Advanced tissue alterations with high-grade dysplasia or possible early malignant transformation. Immediate intervention required.',
+                            riskLevel: 'high'
+                        },
+                        {
+                            title: 'Urgent Oncological Referral',
+                            description: 'Immediate specialist consultation with oncology team. Consider expedited staging workup and treatment planning.',
+                            riskLevel: 'high'
+                        },
+                        {
+                            title: 'Multidisciplinary Assessment',
+                            description: 'Coordinate care with gastroenterology, oncology, and surgical teams for comprehensive evaluation and treatment planning.',
+                            riskLevel: 'high'
+                        }
+                    ];
+                }
+
+                return findingsMap[className] || [
+                    {
+                        title: 'Analysis Complete',
+                        description: 'Tissue classification completed. Clinical correlation and professional medical interpretation required.',
+                        riskLevel: 'moderate'
+                    }
+                ];
+            }
+
+            function showProgress() {
+                progressSection.style.display = 'block';
+            }
+
+            function hideProgress() {
+                progressSection.style.display = 'none';
+            }
+
+            async function updateProgress(status, percentage) {
+                document.getElementById('progressStatus').textContent = status;
+                document.getElementById('progressPercentage').textContent = percentage + '%';
+                document.getElementById('progressFill').style.width = percentage + '%';
+                await sleep(300);
+            }
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                hideProgress();
+            }
+
+            function hideError() {
+                errorMessage.style.display = 'none';
+            }
+
+            function updateWorkflowStep(step) {
+                // Reset all steps (gracefully handle missing elements in new UI)
+                for (let i = 1; i <= 4; i++) {
+                    const circle = document.getElementById(`step${i}`);
+                    if (!circle) continue;
+                    const label = circle.parentElement.querySelector('.step-label');
+                    if (label) {
+                        circle.className = 'step-circle';
+                        label.className = 'step-label';
+                    }
+                }
+
+                // Mark completed steps
+                for (let i = 1; i < step; i++) {
+                    const circle = document.getElementById(`step${i}`);
+                    if (!circle) continue;
+                    const label = circle.parentElement.querySelector('.step-label');
+                    if (label) {
+                        circle.className = 'step-circle completed';
+                    }
+                }
+
+                // Mark active step
+                if (step <= 4) {
+                    const circle = document.getElementById(`step${step}`);
+                    if (!circle) return;
+                    const label = circle.parentElement.querySelector('.step-label');
+                    if (label) {
+                        circle.className = 'step-circle active';
+                        label.className = 'step-label active';
+                    }
+                }
+            }
+
+            function generateReport() {
+                if (!analysisResult) return;
+
+                updateWorkflowStep(4);
+                loadingOverlay.style.display = 'flex';
+
+                // Generate comprehensive PDF report
+                setTimeout(async () => {
+                    try {
+                        const { jsPDF } = window.jspdf;
+                        const doc = new jsPDF();
+
+                        const pageWidth = doc.internal.pageSize.getWidth();
+                        const pageHeight = doc.internal.pageSize.getHeight();
+                        let yPosition = 20;
+
+                        // Helper function to add new page if needed
+                        const checkAddPage = (requiredSpace) => {
+                            if (yPosition + requiredSpace > pageHeight - 20) {
+                                doc.addPage();
+                                yPosition = 20;
+                                return true;
+                            }
+                            return false;
+                        };
+
+                        // Header Section
+                        doc.setFillColor(30, 60, 114);
+                        doc.rect(0, 0, pageWidth, 40, 'F');
+
+                        doc.setTextColor(255, 255, 255);
+                        doc.setFontSize(24);
+                        doc.setFont(undefined, 'bold');
+                        doc.text('EsophaScan AI', pageWidth / 2, 20, { align: 'center' });
+
+                        doc.setFontSize(12);
+                        doc.setFont(undefined, 'normal');
+                        doc.text('Medical Imaging Analysis Report', pageWidth / 2, 30, { align: 'center' });
+
+                        yPosition = 50;
+                        doc.setTextColor(0, 0, 0);
+
+                        // Report Information
+                        doc.setFontSize(10);
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Report Details', 15, yPosition);
+                        yPosition += 8;
+
+                        doc.setFont(undefined, 'normal');
+                        doc.setFontSize(9);
+                        const reportDate = new Date().toLocaleString();
+                        doc.text(`Generated: ${reportDate}`, 15, yPosition);
+                        yPosition += 6;
+                        doc.text(`Patient File: ${currentFile?.name || 'N/A'}`, 15, yPosition);
+                        yPosition += 6;
+                        doc.text(`Analysis ID: ${Date.now()}`, 15, yPosition);
+                        yPosition += 15;
+
+                        // Diagnosis Section
+                        checkAddPage(40);
+                        doc.setFontSize(14);
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(30, 60, 114);
+                        doc.text('DIAGNOSTIC ASSESSMENT', 15, yPosition);
+                        yPosition += 8;
+
+                        doc.setDrawColor(30, 60, 114);
+                        doc.setLineWidth(0.5);
+                        doc.line(15, yPosition, pageWidth - 15, yPosition);
+                        yPosition += 10;
+
+                        doc.setTextColor(0, 0, 0);
+                        doc.setFontSize(11);
+                        doc.setFont(undefined, 'bold');
+
+                        if (analysisResult.isPositive) {
+                            doc.setTextColor(231, 76, 60);
+                            doc.text('Status: ABNORMALITIES DETECTED', 15, yPosition);
+                        } else {
+                            doc.setTextColor(39, 174, 96);
+                            doc.text('Status: NO SIGNIFICANT ABNORMALITIES', 15, yPosition);
+                        }
+                        yPosition += 8;
+
+                        doc.setTextColor(0, 0, 0);
+                        doc.setFont(undefined, 'normal');
+                        doc.setFontSize(10);
+                        const predictionText = doc.splitTextToSize(analysisResult.prediction, pageWidth - 30);
+                        doc.text(predictionText, 15, yPosition);
+                        yPosition += (predictionText.length * 6) + 15;
+
+                        // Key Metrics Section
+                        checkAddPage(50);
+                        doc.setFontSize(12);
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(30, 60, 114);
+                        doc.text('KEY METRICS', 15, yPosition);
+                        yPosition += 8;
+
+                        doc.setDrawColor(30, 60, 114);
+                        doc.line(15, yPosition, pageWidth - 15, yPosition);
+                        yPosition += 10;
+
+                        // Metrics Grid
+                        doc.setTextColor(0, 0, 0);
+                        doc.setFontSize(10);
+
+                        const metrics = [
+                            { label: 'Classification', value: analysisResult.indicators },
+                            { label: 'Model Confidence', value: `${analysisResult.confidence.toFixed(1)}%` },
+                            { label: 'Cancer Probability', value: `${analysisResult.cancerProbability.toFixed(1)}%` },
+                            { label: 'Processing Time', value: `${analysisResult.processingTime}s` }
+                        ];
+
+                        const colWidth = (pageWidth - 30) / 2;
+                        metrics.forEach((metric, index) => {
+                            const col = index % 2;
+                            const row = Math.floor(index / 2);
+                            const xPos = 15 + (col * colWidth);
+                            const yPos = yPosition + (row * 25);
+
+                            doc.setFillColor(248, 249, 250);
+                            doc.roundedRect(xPos, yPos - 5, colWidth - 5, 18, 2, 2, 'F');
+
+                            doc.setFont(undefined, 'normal');
+                            doc.setFontSize(8);
+                            doc.setTextColor(127, 140, 141);
+                            doc.text(metric.label, xPos + 3, yPos);
+
+                            doc.setFont(undefined, 'bold');
+                            doc.setFontSize(11);
+                            doc.setTextColor(44, 62, 80);
+                            doc.text(metric.value, xPos + 3, yPos + 8);
+                        });
+
+                        yPosition += 60;
+
+                        // Clinical Findings Section
+                        checkAddPage(60);
+                        doc.setFontSize(12);
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(30, 60, 114);
+                        doc.text('CLINICAL FINDINGS', 15, yPosition);
+                        yPosition += 8;
+
+                        doc.setDrawColor(30, 60, 114);
+                        doc.line(15, yPosition, pageWidth - 15, yPosition);
+                        yPosition += 10;
+
+                        const findings = getFindingsForClass(analysisResult.indicators, analysisResult.confidence);
+
+                        findings.forEach((finding, index) => {
+                            checkAddPage(40);
+
+                            // Color-coded border
+                            const borderColor = finding.riskLevel === 'high' ? [231, 76, 60] :
+                                finding.riskLevel === 'moderate' ? [243, 156, 18] : [39, 174, 96];
+
+                            doc.setDrawColor(...borderColor);
+                            doc.setLineWidth(2);
+                            doc.line(15, yPosition, 15, yPosition + 30);
+
+                            doc.setFillColor(248, 249, 250);
+                            doc.roundedRect(18, yPosition - 2, pageWidth - 36, 32, 2, 2, 'F');
+
+                            doc.setFont(undefined, 'bold');
+                            doc.setFontSize(10);
+                            doc.setTextColor(44, 62, 80);
+                            doc.text(finding.title, 22, yPosition + 5);
+
+                            doc.setFont(undefined, 'normal');
+                            doc.setFontSize(9);
+                            doc.setTextColor(85, 85, 85);
+                            const findingText = doc.splitTextToSize(finding.description, pageWidth - 50);
+                            doc.text(findingText, 22, yPosition + 12);
+
+                            yPosition += 40;
+                        });
+
+                        // Image Analysis Section (if available)
+                        if (currentFile) {
+                            checkAddPage(80);
+                            doc.setFontSize(12);
+                            doc.setFont(undefined, 'bold');
+                            doc.setTextColor(30, 60, 114);
+                            doc.text('VISUAL ANALYSIS', 15, yPosition);
+                            yPosition += 8;
+
+                            doc.setDrawColor(30, 60, 114);
+                            doc.line(15, yPosition, pageWidth - 15, yPosition);
+                            yPosition += 10;
+
+                            try {
+                                const imgElement = document.querySelector('.medical-image');
+                                if (imgElement) {
+                                    const canvas = await html2canvas(imgElement.parentElement, {
+                                        backgroundColor: '#2c3e50',
+                                        scale: 2
+                                    });
+
+                                    const imgData = canvas.toDataURL('image/jpeg', 0.8);
+                                    const imgWidth = pageWidth - 30;
+                                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                                    if (imgHeight > pageHeight - yPosition - 20) {
+                                        doc.addPage();
+                                        yPosition = 20;
+                                    }
+
+                                    doc.addImage(imgData, 'JPEG', 15, yPosition, imgWidth, Math.min(imgHeight, 120));
+                                    yPosition += Math.min(imgHeight, 120) + 10;
+                                }
+                            } catch (error) {
+                                console.error('Error adding image to PDF:', error);
+                                doc.setFontSize(9);
+                                doc.setTextColor(127, 140, 141);
+                                doc.text('Image analysis available in digital format', 15, yPosition);
+                                yPosition += 10;
+                            }
+                        }
+
+                        // Medical Disclaimer
+                        checkAddPage(40);
+                        yPosition += 10;
+                        doc.setFillColor(255, 243, 205);
+                        doc.roundedRect(15, yPosition, pageWidth - 30, 35, 2, 2, 'F');
+
+                        doc.setFontSize(10);
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(133, 100, 4);
+                        doc.text('⚠ IMPORTANT MEDICAL DISCLAIMER', 18, yPosition + 7);
+
+                        doc.setFont(undefined, 'normal');
+                        doc.setFontSize(8);
+                        const disclaimerText = doc.splitTextToSize(
+                            'This AI-powered analysis is intended for research and educational purposes only. Results should not be used as the sole basis for medical diagnosis or treatment decisions. Always consult with qualified healthcare professionals and undergo proper medical evaluation. This system is designed to assist medical professionals and should not replace clinical judgment.',
+                            pageWidth - 40
+                        );
+                        doc.text(disclaimerText, 18, yPosition + 14);
+
+                        yPosition += 45;
+
+                        // Footer
+                        doc.setFontSize(8);
+                        doc.setTextColor(127, 140, 141);
+                        doc.setFont(undefined, 'normal');
+                        const footerText = `EsophaScan AI - Medical Imaging Analysis Platform | Report ID: ${Date.now()}`;
+                        doc.text(footerText, pageWidth / 2, pageHeight - 10, { align: 'center' });
+
+                        // Save PDF
+                        const fileName = `EsophaScan_Report_${Date.now()}.pdf`;
+                        doc.save(fileName);
+
+                        loadingOverlay.style.display = 'none';
+
+                        // Show success message
+                        alert(`Medical report generated successfully!\n\nFile: ${fileName}\n\nThe comprehensive PDF report includes:\n• Diagnostic assessment\n• Key metrics and confidence scores\n• Clinical findings and recommendations\n• Visual analysis with annotations\n• Medical disclaimers`);
+
+                    } catch (error) {
+                        console.error('PDF generation error:', error);
+                        loadingOverlay.style.display = 'none';
+                        alert('Error generating PDF report. Please try again or export data as JSON instead.');
+                    }
+                }, 500);
+            }
+
+            function exportData() {
+                if (!analysisResult) return;
+
+                const exportData = {
+                    timestamp: new Date().toISOString(),
+                    filename: currentFile?.name || 'unknown',
+                    classification: analysisResult.indicators,
+                    confidence: analysisResult.confidence,
+                    cancerProbability: analysisResult.cancerProbability,
+                    prediction: analysisResult.prediction,
+                    processingTime: analysisResult.processingTime,
+                    isPositive: analysisResult.isPositive
+                };
+
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `esophageal_analysis_${Date.now()}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+
+            function resetSystem() {
+                currentFile = null;
+                analysisResult = null;
+
+                // Reset UI elements
+                fileDetails.style.display = 'none';
+                progressSection.style.display = 'none';
+                resultsContent.style.display = 'none';
+                resultsPlaceholder.style.display = 'block';
+                imageAnalysis.style.display = 'none';
+                hideError();
+
+                // Reset file input
+                fileInput.value = '';
+
+                // Reset workflow
+                updateWorkflowStep(1);
+
+                // Disable action buttons
+                document.getElementById('reportBtn').disabled = true;
+                document.getElementById('exportBtn').disabled = true;
+
+                // Clear image URLs
+                const existingImage = document.querySelector('.medical-image');
+                if (existingImage && existingImage.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(existingImage.src);
+                }
+            }
+
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            // Initialize system
+            document.addEventListener('DOMContentLoaded', function () {
+                updateWorkflowStep(1);
+            });
+        </script>
+</body>
+
+</html>

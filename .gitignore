@@ -1,0 +1,28 @@
+# Environment variables (contains API keys - NEVER commit this)
+.env
+api.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Virtual environments
+.venv/
+
+# Temp/test files
+test_gemini.py
+test_gemini_full.py
+test_gemini_models.py
+test_gemini_payload.py
+models.txt
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
