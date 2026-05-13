@@ -33,19 +33,7 @@
 
 <div align="center">
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  ██████╗  ██████╗  ██████╗██╗  ██╗███████╗████████╗███████╗ ██████╗│
-│  ██╔══██╗██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝██╔════╝██╔════╝│
-│  ██████╔╝██║   ██║██║     █████╔╝ █████╗     ██║   ███████╗██║     │
-│  ██╔═══╝ ██║   ██║██║     ██╔═██╗ ██╔══╝     ██║   ╚════██║██║     │
-│  ██║     ╚██████╔╝╚██████╗██║  ██╗███████╗   ██║   ███████║╚██████╗│
-│  ╚═╝      ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝ ╚═════╝│
-│                                                                      │
-│       ✦  MEDSCAN AI  ·  ESOPHASCAN EDITION  ✦                       │
-│       Powered by Google Gemini 2.5 Flash + EfficientNet-B0           │
-└─────────────────────────────────────────────────────────────────────┘
-```
+<img src="assets/hero_banner.png" alt="MedScan AI — EsophaScan Edition Hero Banner" width="100%"/>
 
 </div>
 
@@ -194,7 +182,7 @@ MedScan-AI/
 python --version
 
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/MedScan-AI.git
+git clone https://github.com/sasidhar-sys/MedScan-AI.git
 cd MedScan-AI
 ```
 
@@ -445,7 +433,7 @@ Contributions are warmly welcome! Here's how to get started:
 # 1. Fork the repository on GitHub
 
 # 2. Clone your fork
-git clone https://github.com/YOUR_USERNAME/MedScan-AI.git
+git clone https://github.com/sasidhar-sys/MedScan-AI.git
 
 # 3. Create a feature branch
 git checkout -b feature/amazing-improvement
@@ -484,21 +472,20 @@ copies or substantial portions of the Software.
 
 <div align="center">
 
-<!-- Wave footer -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=120&section=footer&animation=twinkling" width="100%"/>
+<!-- Self-hosted animated wave footer -->
+<img src="assets/footer_wave.svg" alt="Footer Wave" width="100%"/>
 
 <br/>
 
 **Built with ❤️ and cutting-edge AI**
 
-[![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/MedScan-AI?style=social)](https://github.com/YOUR_USERNAME/MedScan-AI)
-[![GitHub forks](https://img.shields.io/github/forks/YOUR_USERNAME/MedScan-AI?style=social)](https://github.com/YOUR_USERNAME/MedScan-AI)
-[![GitHub watchers](https://img.shields.io/github/watchers/YOUR_USERNAME/MedScan-AI?style=social)](https://github.com/YOUR_USERNAME/MedScan-AI)
+[![GitHub stars](https://img.shields.io/github/stars/sasidhar-sys/MedScan-AI?style=social)](https://github.com/sasidhar-sys/MedScan-AI)
+[![GitHub forks](https://img.shields.io/github/forks/sasidhar-sys/MedScan-AI?style=social)](https://github.com/sasidhar-sys/MedScan-AI)
+[![GitHub watchers](https://img.shields.io/github/watchers/sasidhar-sys/MedScan-AI?style=social)](https://github.com/sasidhar-sys/MedScan-AI)
 
 <br/>
 
-<a href="https://github.com/YOUR_USERNAME/MedScan-AI">
-  <img src="https://readme-typing-svg.demolab.com?font=Space+Mono&size=14&duration=4000&pause=1000&color=7C3AED&center=true&vCenter=true&width=600&lines=⭐+Star+this+repo+if+it+helped+you!;🔬+Making+AI+medicine+accessible+to+all;🚀+MedScan+AI+—+Scan+Smarter%2C+Save+Lives" alt="Footer Typing" />
-</a>
+<!-- Self-hosted footer typing SVG -->
+<img src="assets/header_typing.svg" alt="MedScan AI — Scan Smarter, Save Lives" width="700"/>
 
 </div>
