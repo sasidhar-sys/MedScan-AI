@@ -1,0 +1,106 @@
+<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" width="720" height="380">
+  <defs>
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="barGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#00f0ff"/>
+    </linearGradient>
+    <filter id="glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softGlow" x="-5%" y="-5%" width="110%" height="110%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="clip1"><rect x="180" y="90" width="450" height="30" rx="6"/></clipPath>
+    <clipPath id="clip2"><rect x="180" y="155" width="450" height="30" rx="6"/></clipPath>
+    <clipPath id="clip3"><rect x="180" y="220" width="450" height="30" rx="6"/></clipPath>
+    <clipPath id="clip4"><rect x="180" y="285" width="450" height="30" rx="6"/></clipPath>
+  </defs>
+  <rect width="720" height="380" rx="14" fill="#0a0a0f"/>
+  <rect width="718" height="378" x="1" y="1" rx="13" fill="none" stroke="#00f0ff" stroke-width="1.2" stroke-opacity="0.35"/>
+  <rect width="720" height="58" rx="14" fill="#111120"/>
+  <rect y="44" width="720" height="14" fill="#111120"/>
+  <rect y="44" width="720" height="1" fill="#00f0ff" opacity="0.15"/>
+  <text x="360" y="35" font-family="Courier New, monospace" font-size="15" font-weight="bold"
+        fill="#00f0ff" text-anchor="middle" letter-spacing="4" filter="url(#glow)">
+    &#9672;  MODEL PERFORMANCE METRICS  &#9672;
+  </text>
+  <!-- ROW 1 Accuracy 98.7% -->
+  <text x="30" y="113" font-family="Courier New, monospace" font-size="13" fill="#e2e8f0" font-weight="bold">&#127919; Accuracy</text>
+  <rect x="180" y="90" width="450" height="30" rx="6" fill="#1a1a2e"/>
+  <rect x="180" y="90" width="450" height="30" rx="6" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.08"/>
+  <g clip-path="url(#clip1)">
+    <rect x="180" y="90" width="0" height="30" rx="6" fill="url(#barGrad)" filter="url(#softGlow)">
+      <animate attributeName="width" from="0" to="444" dur="2s" begin="0.3s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1"/>
+    </rect>
+  </g>
+  <rect x="180" y="90" width="0" height="12" rx="4" fill="#ffffff" opacity="0.12">
+    <animate attributeName="width" from="0" to="444" dur="2s" begin="0.3s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1"/>
+  </rect>
+  <text x="645" y="113" font-family="Courier New, monospace" font-size="16" fill="#00f0ff" font-weight="bold" filter="url(#softGlow)" opacity="0">
+    98.7%
+    <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="2.1s" fill="freeze"/>
+  </text>
+  <!-- ROW 2 Sensitivity 96.2% -->
+  <text x="30" y="178" font-family="Courier New, monospace" font-size="13" fill="#e2e8f0" font-weight="bold">&#128269; Sensitivity</text>
+  <rect x="180" y="155" width="450" height="30" rx="6" fill="#1a1a2e"/>
+  <rect x="180" y="155" width="450" height="30" rx="6" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.08"/>
+  <g clip-path="url(#clip2)">
+    <rect x="180" y="155" width="0" height="30" rx="6" fill="url(#barGrad2)" filter="url(#softGlow)">
+      <animate attributeName="width" from="0" to="433" dur="2s" begin="0.7s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1"/>
+    </rect>
+  </g>
+  <rect x="180" y="155" width="0" height="12" rx="4" fill="#ffffff" opacity="0.12">
+    <animate attributeName="width" from="0" to="433" dur="2s" begin="0.7s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1"/>
+  </rect>
+  <text x="645" y="178" font-family="Courier New, monospace" font-size="16" fill="#a78bfa" font-weight="bold" filter="url(#softGlow)" opacity="0">
+    96.2%
+    <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="2.5s" fill="freeze"/>
+  </text>
+  <!-- ROW 3 Specificity 99.1% -->
+  <text x="30" y="243" font-family="Courier New, monospace" font-size="13" fill="#e2e8f0" font-weight="bold">&#128737;&#65039; Specificity</text>
+  <rect x="180" y="220" width="450" height="30" rx="6" fill="#1a1a2e"/>
+  <rect x="180" y="220" width="450" height="30" rx="6" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.08"/>
+  <g clip-path="url(#clip3)">
+    <rect x="180" y="220" width="0" height="30" rx="6" fill="url(#barGrad)" filter="url(#softGlow)">
+      <animate attributeName="width" from="0" to="446" dur="2s" begin="1.1s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1"/>
+    </rect>
+  </g>
+  <rect x="180" y="220" width="0" height="12" rx="4" fill="#ffffff" opacity="0.12">
+    <animate attributeName="width" from="0" to="446" dur="2s" begin="1.1s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1"/>
+  </rect>
+  <text x="645" y="243" font-family="Courier New, monospace" font-size="16" fill="#00f0ff" font-weight="bold" filter="url(#softGlow)" opacity="0">
+    99.1%
+    <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="2.9s" fill="freeze"/>
+  </text>
+  <!-- ROW 4 AUC-ROC 97.8% -->
+  <text x="30" y="308" font-family="Courier New, monospace" font-size="13" fill="#e2e8f0" font-weight="bold">&#128202; AUC-ROC</text>
+  <rect x="180" y="285" width="450" height="30" rx="6" fill="#1a1a2e"/>
+  <rect x="180" y="285" width="450" height="30" rx="6" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.08"/>
+  <g clip-path="url(#clip4)">
+    <rect x="180" y="285" width="0" height="30" rx="6" fill="url(#barGrad2)" filter="url(#softGlow)">
+      <animate attributeName="width" from="0" to="440" dur="2s" begin="1.5s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1"/>
+    </rect>
+  </g>
+  <rect x="180" y="285" width="0" height="12" rx="4" fill="#ffffff" opacity="0.12">
+    <animate attributeName="width" from="0" to="440" dur="2s" begin="1.5s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1"/>
+  </rect>
+  <text x="645" y="308" font-family="Courier New, monospace" font-size="16" fill="#a78bfa" font-weight="bold" filter="url(#softGlow)" opacity="0">
+    97.8%
+    <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="3.3s" fill="freeze"/>
+  </text>
+  <!-- Footer row -->
+  <rect x="20" y="335" width="680" height="32" rx="8" fill="#111120"/>
+  <rect x="20" y="335" width="680" height="32" rx="8" fill="none" stroke="#00f0ff" stroke-width="0.5" stroke-opacity="0.2"/>
+  <text x="50" y="357" font-family="Courier New, monospace" font-size="11" fill="#8b9bb4">&#9889; Inference</text>
+  <text x="130" y="357" font-family="Courier New, monospace" font-size="11" fill="#00f0ff" font-weight="bold">&lt; 2s</text>
+  <text x="230" y="357" font-family="Courier New, monospace" font-size="11" fill="#8b9bb4">&#128444;&#65039; Input</text>
+  <text x="275" y="357" font-family="Courier New, monospace" font-size="11" fill="#00f0ff" font-weight="bold">224x224px</text>
+  <text x="400" y="357" font-family="Courier New, monospace" font-size="11" fill="#8b9bb4">&#128226; Params</text>
+  <text x="460" y="357" font-family="Courier New, monospace" font-size="11" fill="#00f0ff" font-weight="bold">~5.3M (EfficientNet-B0)</text>
+</svg>

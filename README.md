@@ -3,10 +3,8 @@
 <!-- Animated Banner -->
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=200&section=header&text=MedScan%20AI&fontSize=80&fontAlignY=35&animation=twinkling&fontColor=00f0ff&desc=Next-Generation%20AI-Powered%20Medical%20Imaging%20Platform&descAlignY=58&descSize=18" width="100%"/>
 
-<!-- Typing animation -->
-<a href="#">
-  <img src="https://readme-typing-svg.demolab.com?font=Space+Mono&size=22&duration=3000&pause=1000&color=00F0FF&center=true&vCenter=true&multiline=true&width=800&height=80&lines=🔬+AI-Powered+Esophageal+Cancer+Detection;⚡+Gemini+2.5+Flash+%7C+EfficientNet-B0+%7C+FastAPI;🛡️+Real-Time+Medical+Image+Analysis" alt="Typing SVG" />
-</a>
+<!-- Typing animation (self-hosted animated SVG — works on GitHub) -->
+<img src="assets/header_typing.svg" alt="MedScan AI Animated Banner" width="860"/>
 
 <br/>
 
@@ -361,42 +359,9 @@ Returns all past scan results for the authenticated user.
 
 <div align="center">
 
-```
-Input Image (224×224×3)
-        │
-        ▼
-┌───────────────────────────────────┐
-│      EfficientNet-B0 Backbone     │
-│    (ImageNet Pretrained Weights)  │
-│                                   │
-│  MBConv Blocks × 7 Stages        │
-│  Squeeze-and-Excitation Modules   │
-│  Swish Activation Functions       │
-└───────────────┬───────────────────┘
-                │
-                ▼
-    Global Average Pooling (1280d)
-                │
-                ▼
-    Custom Classifier Head
-    Linear(1280 → 8 classes)
-                │
-                ▼
-       Softmax → Probabilities
-                │
-    ┌───────────┴────────────┐
-    │                        │
-    ▼                        ▼
-Gemini 2.5 Flash       EfficientNet
- Multimodal AI           Prediction
- Cross-Validation        (Local)
-    │                        │
-    └───────────┬────────────┘
-                │
-                ▼
-      Final Merged Diagnosis
-      + Confidence Score (%)
-```
+<img src="assets/model_architecture.png" alt="EfficientNet-B0 Architecture — Pencil Sketch" width="680"/>
+
+*Hand-drawn technical illustration of the EfficientNet-B0 pipeline for esophageal cancer classification*
 
 </div>
 
@@ -438,19 +403,7 @@ Gemini 2.5 Flash       EfficientNet
 
 <div align="center">
 
-```
-┌─────────────────────────────────────────────────────┐
-│              MODEL PERFORMANCE METRICS               │
-├───────────────────────┬─────────────────────────────┤
-│ 🎯 Accuracy           │ ████████████████████ 98.7%  │
-│ 🔍 Sensitivity        │ ███████████████████  96.2%  │
-│ 🛡️ Specificity        │ ████████████████████ 99.1%  │
-│ 📊 AUC-ROC            │ ███████████████████  97.8%  │
-│ ⚡ Avg Inference Time  │ < 2 seconds                  │
-│ 🖼️ Input Resolution   │ 224 × 224 pixels             │
-│ 🔢 Model Parameters   │ ~5.3M (EfficientNet-B0)      │
-└───────────────────────┴─────────────────────────────┘
-```
+<img src="assets/metrics_bars.svg" alt="Animated Performance Metrics — bars fill on load" width="720"/>
 
 </div>
 
