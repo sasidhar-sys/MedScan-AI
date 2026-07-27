@@ -1,28 +1,68 @@
-# Environment variables (contains API keys - NEVER commit this)
-.env
-api.env
-
 # Python
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
+*.pyd
+
+# Virtual Environment
 .venv/
 venv/
-*.egg-info/
+env/
 
-# Virtual environments
-.venv/
-
-# Temp/test files
-test_gemini.py
-test_gemini_full.py
-test_gemini_models.py
-test_gemini_payload.py
-models.txt
+# Environment
+.env
 
 # IDE
 .vscode/
+.idea/
 
-# OS
+# Logs
+logs/
+*.log
+
+# Uploads
+uploads/
+
+# Reports
+reports/
+
+# AI Models
+*.pth
+*.pt
+*.ckpt
+*.onnx
+
+# Dataset
+datasets/
+
+# Database
+*.db
+
+# Alembic
+alembic/versions/
+
+# macOS
 .DS_Store
+
+# Windows
 Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Build
+dist/
+build/
+
+# Node
+node_modules/
+
+# Docker
+*.pid

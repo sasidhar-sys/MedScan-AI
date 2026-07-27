@@ -1,0 +1,77 @@
+# ======================================================
+# MedScan AI - Smart Esophageal Diagnosis System (SEDS)
+# Requirements
+# ======================================================
+
+# FastAPI & Server
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+
+# Database
+sqlalchemy==2.0.43
+psycopg2-binary==2.9.10
+alembic==1.16.4
+
+# Authentication & Security
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.5.0
+bcrypt==4.3.0
+python-multipart
+email-validator
+
+# Configuration
+python-dotenv==1.1.1
+pydantic==2.11.7
+pydantic-settings==2.10.1
+
+# AI / Deep Learning
+torch
+torchvision
+torchaudio
+timm
+monai
+transformers
+opencv-python
+numpy
+pillow
+scikit-learn
+scipy
+pandas
+
+# Explainable AI
+grad-cam
+captum
+shap
+lime
+
+# Visualization
+matplotlib
+plotly
+
+# Reports
+reportlab
+jinja2
+
+# Chatbot
+google-generativeai
+sentence-transformers
+faiss-cpu
+
+# Utilities
+httpx
+requests
+tqdm
+rich
+
+# Logging
+loguru
+
+# Testing
+pytest
+pytest-asyncio
+
+# Code Quality
+black
+isort
+flake8
+mypy
